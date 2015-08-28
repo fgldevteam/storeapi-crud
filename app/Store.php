@@ -1,0 +1,96 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+
+
+class Store extends Model
+{
+    protected $table = 'stores';
+
+    protected $fillable = ["id", 'store_number', 'banner_id', 'district_id', 'classification_id', 'status_id',
+    						 'name', 'address1', 'city', 'province', 'postal_code', 'lat', 'long', 'sqft', 
+    						 'mall_entrance', 'entrances', 'cashbanks', 'floors', 'registers', 'pdts',
+    						 'tablets', 'last_reno', 'last_computer_update'];
+
+    public static function createStore(Request $request)
+    {
+    	   $storenumber = $request->get('storenumber');
+
+           if (isset(preg_split('/^0/', $storenumber)[1])) {
+                $storeid = (int) preg_split('/^0/', $storenumber)[1];
+           }
+           else{
+            $storeid = (int) $storenumber;
+           }
+
+           Store::create([
+                'id' => $storeid,
+                'store_number'  => $request->get('storenumber'),
+                'name'          => $request->get('storename'),
+                'address1'      => $request->get('address'),
+                'city'          => $request->get('city'),
+                'province'      => $request->get('province'),
+                'postal_code'   => $request->get('postalcode'),
+                'banner_id'     => $request->get('banner'),
+                'classification_id'=>$request->get('classification'),
+                'district_id'   => $request->get('district'),
+                'status_id'     => $request->get('status'),
+                'sqft'          => $request->get('sqft'),
+                'mall_entrance' => $request->get('mall_entrance'),
+                'entrances'     => $request->get('no_of_entrances'),
+                'cashbanks'     => $request->get('no_of_cashbanks'),
+                'floors'        => $request->get('no_of_floors'),
+                'registers'     => $request->get('no_of_registers'),
+                'pdts'          => $request->get('no_of_pdts'),
+                'tablets'       => $request->get('no_of_tablets'),
+                'last_reno'     => $request->get('last_reno'),
+                'last_computer_update' =>$request->get('last_computer_update')
+
+
+            ]);
+
+    }
+    public static function updateStore(Request $request,$id){
+        
+        $store = Store::findOrFail($id);
+
+        $store['name']          = $request->get('storename');
+        $store['address1']      = $request->get('address');
+        $store['city']          = $request->get('city');
+        $store['province']      = $request->get('province');
+        $store['postal_code']   = $request->get('postalcode');
+        $store['banner_id']     = $request->get('banner');
+        $store['classification_id']= $request->get('classification');
+        $store['district_id']   = $request->get('district');
+        $store['status_id']     = $request->get('status');
+        $store['sqft']          = $request->get('sqft');
+        $store['mall_entrance'] = $request->get('mall_entrance');
+        $store['entrances']     = $request->get('no_of_entrances');
+        $store['cashbanks']     = $request->get('no_of_cashbanks');
+        $store['floors']        = $request->get('no_of_floors');
+        $store['registers']     = $request->get('no_of_registers');
+        $store['pdts']          = $request->get('no_of_pdts');
+        $store['tablets']       = $request->get('no_of_tablets');
+        $store['last_reno']     = $request->get('last_reno');
+        $store['last_computer_update'] = $request->get('last_computer_update');
+
+        $store->save();
+    }
+
+    public static function getStoreDetails($id)
+    {
+    	return Store::where('id', $id)->first();
+    }
+
+    public static function getAllStores($sort = null)
+    {
+  
+    	$storesCollection = Store::all()->sortBy($sort) ;
+    	return $storesCollection;
+    }
+
+
+}
