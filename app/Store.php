@@ -92,5 +92,47 @@ class Store extends Model
     	return $storesCollection;
     }
 
+    public static function getSearchList()
+    {
+        $stores = Store::select(
+                    \DB::raw("CONCAT (id, ' - ' , name, ' , ', city ) as label, id as value")
+                )->lists("label", "value");
+        
+        $searchList = [];
+        
+        foreach ($stores as $value => $label) {
+            $searchItem = [
+                'value' => $value,
+                'label' => $label,
+            ];
+            array_push($searchList, ($searchItem) );
+            
+        }   
+        
+        return ( json_encode ( $searchList ) );
+    }
+
+    public static function getProvinceList()
+    {
+        $provinceList = \DB::table('stores')->distinct()->lists('province');
+        return json_encode($provinceList);
+
+    }
+    
+    public static function getCityList()
+    {
+        $cityList = \DB::table('stores')->distinct()->lists('city');
+        return json_encode( $cityList );
+    }
+
+    public static function getDistrictList()
+    {
+        $districtList = \DB::table('districts')
+                            ->join('stores', 'districts.id' , '=', 'stores.district_id')
+                            ->select('districts.name')
+                            ->distinct()
+                            ->get();
+        return json_encode($districtList);    
+    }
 
 }

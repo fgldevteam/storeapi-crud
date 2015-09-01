@@ -8,6 +8,12 @@
 
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
 	<link rel="stylesheet" type="text/css" href="/css/form.css">
+	<link rel="stylesheet" type="text/css" href="/css/store.css">
+	<link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="/css/query-builder.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/selectize.bootstrap3.css">
+
 	
 	<!-- Fonts -->
 	<link href='//fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
@@ -56,7 +62,9 @@
 
 	
 	<div class="col-md-2 sidebar-container">
+		@if(Auth::check())
 		@include('nav')
+		@endif
 	</div>
 	<div class="col-md-10 content-container"> 
 		@yield('content')
@@ -69,12 +77,160 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
 	<script type="text/javascript" src="/js/store.js"></script>
 	<script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script type="text/javascript" src="/js/query-builder-standalone.min.js"></script> 
+	<script type="text/javascript" src="/js/selectize.min.js"></script>
+
 	<script type="text/javascript">
 		$("#last_reno").datepicker();
 		$("#last_computer_update").datepicker();
-		$(".selector").autocomplete({
-		  appendTo: "#someElem"
+		
+		var availableTags = <?php  echo str_replace('&quot;', '"', $searchList) ;  ?>;
+		var cityList = <?php  echo str_replace('&quot;', '"', $cityList) ;  ?>;
+		var provinceList  =  <?php echo str_replace('&quot;', '"', $provinceList) ;  ?>;
+		var districtList  = <?php echo str_replace('&quot;', '"', $districtList); ?>;
+		$( "#search" ).autocomplete();
+		$("#search").autocomplete({
+			source : availableTags,
+			select : function(event, input){
+				window.location.replace('/store/' + input.item.value)
+			} 
+		})
+		 console.log(cityList)
+		$('#builder').queryBuilder({
+			
+		    filters: [
+		    {
+		        id   : 'id',
+		        label: 'Store Number',
+		        type : 'string',
+		        operators: ['equal', 'not_equal']
+		    },
+		    {
+		    	id : 'city',
+		    	label : 'City', 
+		    	type : 'string', 
+		    	plugin : 'selectize',
+		    	plugin_config: {
+			      valueField: 'id',
+			      labelField: 'name',
+			      searchField: 'name',
+			      sortField: 'name',
+			      create: true,
+			      maxItems: 1,
+			      plugins: ['remove_button'],
+			      onInitialize: function() {
+			        var that = this;
+			       
+			        cityList.forEach(function(item) {
+			              that.addOption(item);
+			        });
+			        
+			      }
+			    },
+			    valueSetter: function(rule, value) {
+			      rule.$el.find('.rule-value-container input')[0].selectize.setValue(value);
+			    },
+
+		    	input: 'select',
+		    	operators : ['equal', 'not_equal'],
+		    	values : cityList
+		    },
+		    {
+		    	id : 'province',
+		    	label : 'Province',
+		    	input : 'select',
+		    	operators : ['equal', 'not_equal'],
+		    	values : provinceList	
+
+		    },
+		    {
+		    	id : 'district', 
+		    	label : 'District',
+		    	input : 'select',
+		    	operators : ['equal', 'not_equal'],
+		    	values : districtList
+		    },
+		    {
+		    	id 	: 'last_reno',
+		    	label: 'Last Renovation Date',
+		    	type: 'date',
+		    	operators : ['greater', 'less', 'equal', 'greater_or_equal', 'less_or_equal']
+		    },
+		    {
+		    	id : 'last_computer_update',
+		    	label : 'Last Computer Update Date',
+		    	type: 'date',
+		    	// input: 'date',
+		    	operators : ['greater', 'less', 'equal']
+
+		    },
+		    {
+		    	id : 'floors',
+		    	label : 'Number of Floors',
+		    	type : 'integer',
+		    	operators : ['equal', 'greater', 'less']
+
+		    }],
+		    
 		});
+
+
+		// set rules
+		$('#builder').queryBuilder('setRules', {
+		    
+		    "rules": [
+		        {
+		            "id": "id",
+		            "field": "id",
+		            "type": "integer",
+		            "input": "text",
+		            "operator": "equal",
+		            "value": "100"
+		        }
+		        
+		    ]
+		});
+
+		
+
+		// reset builder
+		$('.reset').on('click', function () {
+
+		    $('#builder').queryBuilder('reset');
+
+		    $(".json-parsed").empty();
+
+		    $(".sql-parsed").empty();
+
+		});
+
+		// get rules & SQL
+		$('.parse-sql').on('click', function () {
+
+		    // JSON
+
+		    var resJson = $('#builder').queryBuilder('getRules');
+
+		    $(".json-parsed").html(JSON.stringify(resJson, null, 2));
+
+		    // SQL
+
+		    var resSql = $('#builder').queryBuilder('getSQL', false);
+
+		    $(".sql-parsed").html(resSql.sql);
+
+		});
+
+		// result
+
+		$(document).ready(function(){
+		    
+		    $( ".parse-sql" ).trigger( "click" );
+		    
+		});
+
+
 	</script>
 	
 

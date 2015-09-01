@@ -27,7 +27,7 @@ class StoreController extends Controller
             $stores = Store::all();
         }
         
-        $searchList = \DB::table('stores')->lists('id');
+        $searchList  = Store::getSearchList();
         $districtsList = \DB::table('districts')->lists('name', 'id');
         return view('store.list')->with('stores', $stores)
                                  ->with('districts', $districtsList)

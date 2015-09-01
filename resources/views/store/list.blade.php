@@ -1,15 +1,16 @@
 @extends('app')
 @section('content')
+
 <div class="row">
 	<div class="col-md-2 col-md-offset-8 form-group">
-		{!! Form::select('search', $searchList, null , ['class'=> 'form-control']) !!}
+		{!! Form::text('search', null, ['class'=> 'form-control', 'id'=>"search", "placeholder"=>"Quick Search"]) !!}
 	</div>
 	<div class="col-md-2 ">
 		{!! Form::label("") !!}
 		<a href="/store/create" class="btn btn-success">Add new store</a>
 	</div>
 </div>
-<table class="table table-hover">
+<table class="table table-hover table-bordered">
 <tr>
 	<th>Store Number</th>
 	<th>Store Name</th>
@@ -24,12 +25,14 @@
 			<td> {{$store->id}} </td>
 			<td> {{$store->name}} </td>
 			<td> {{$store->province}} </td>
-			<td> {{ $districts[$store->district_id] }} </td>
+			<td> {{$districts[$store->district_id]}} </td>
 			<td> {{$store->city}} </td>
-			<td> <a href="/store/{{$store->id}}" class="btn btn-info">View</a> </td>
-			<td> <a href="/store/{{$store->id}}/edit" class="btn btn-warning">Edit</a> </td>
+			<td> <a href="/store/{{$store->id}}" class="btn ">View</a> </td>
+			<td> <a href="/store/{{$store->id}}/edit" class="btn ">Edit</a> </td>
 			
 	</tr>
 @endforeach
 </table>
+
+	
 @endsection

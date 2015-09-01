@@ -12,7 +12,7 @@
 			
 		</tr>
 		<tr>
-			<td>{{$key}}</td>
+			<td> <b>{{$key}} </b></td>
 			<td>{{$value}}</td>
 		</tr>
 		@endforeach

@@ -27,3 +27,5 @@ Route::post('/register', 'Auth\AuthController@postRegister');
 Route::get('/home','StoreController@index');
 
 Route::resource('store', 'StoreController');
+
+Route::get('/report', 'ReportController@index');
