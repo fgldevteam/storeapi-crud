@@ -6,13 +6,22 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Laravel</title>
 
+	<!-- basic styling -->
 	<link href="{{ asset('/css/app.css') }}" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="/css/form.css">
-	<link rel="stylesheet" type="text/css" href="/css/store.css">
-	<link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-	<link rel="stylesheet" type="text/css" href="/css/query-builder.min.css">
 	<link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap-datepicker.standalone.min.css">
+
+	<!-- For quicksearch -->
+	<link rel="stylesheet" type="text/css" href="/css/jquery-ui.min.css">
+
+	<!-- custom css-->
+	<link rel="stylesheet" type="text/css" href="/css/form.css">
+	<link rel="stylesheet" type="text/css" href="/css/store.css"> 
+	
+	<!-- For query builder -->
+	<link rel="stylesheet" type="text/css" href="/css/query-builder.min.css">
 	<link rel="stylesheet" type="text/css" href="/css/selectize.bootstrap3.css">
+	
 
 	
 	<!-- Fonts -->
@@ -71,24 +80,42 @@
 	</div>	
 
 	<!-- Scripts -->
-	<!-- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script> -->
 	<script type="text/javascript" src="/js/jquery-2.1.4.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/js/bootstrap-select.min.js"></script>
-	<script type="text/javascript" src="/js/store.js"></script>
-	<script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
-	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<script type="text/javascript" src="/js/underscore.min.js"></script>
+	<!-- For quicksearch -->
+	<script src="/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datepicker-standalone.min.js"></script>
+	<!-- For query builder -->
 	<script type="text/javascript" src="/js/query-builder-standalone.min.js"></script> 
 	<script type="text/javascript" src="/js/selectize.min.js"></script>
-
+	<!-- Custom js files -->
+	<script type="text/javascript" src="/js/store.js"></script>
 	<script type="text/javascript">
+
 		$("#last_reno").datepicker();
 		$("#last_computer_update").datepicker();
 		
+		<?php if(isset($searchList)){ ?>
 		var availableTags = <?php  echo str_replace('&quot;', '"', $searchList) ;  ?>;
+		<?php } ?>
+		
+		<?php  if(isset($cityList)){ ?>
 		var cityList = <?php  echo str_replace('&quot;', '"', $cityList) ;  ?>;
+		<?php } ?>
+		
+		<?php if(isset($provinceList)){ ?>
 		var provinceList  =  <?php echo str_replace('&quot;', '"', $provinceList) ;  ?>;
+		<?php } ?>
+		
+		<?php if(isset($districtList)){ ?>
 		var districtList  = <?php echo str_replace('&quot;', '"', $districtList); ?>;
+		<?php } ?>
+
+		<?php if(isset($bannerList)){ ?>
+		var bannerList  = <?php echo str_replace('&quot;', '"', $bannerList); ?>;
+		<?php } ?>
+		
 		$( "#search" ).autocomplete();
 		$("#search").autocomplete({
 			source : availableTags,
@@ -96,15 +123,15 @@
 				window.location.replace('/store/' + input.item.value)
 			} 
 		})
-		 console.log(cityList)
 		$('#builder').queryBuilder({
 			
 		    filters: [
 		    {
 		        id   : 'id',
 		        label: 'Store Number',
-		        type : 'string',
-		        operators: ['equal', 'not_equal']
+		        type : 'integer',
+		        operators: ['equal', 'not_equal'],
+		        
 		    },
 		    {
 		    	id : 'city',
@@ -145,23 +172,43 @@
 
 		    },
 		    {
-		    	id : 'district', 
+		    	id : 'district_id', 
 		    	label : 'District',
+		    	type: 'integer',
 		    	input : 'select',
 		    	operators : ['equal', 'not_equal'],
 		    	values : districtList
 		    },
 		    {
+		    	id : 'banner_id', 
+		    	label : 'Banner',
+		    	type: 'integer',
+		    	input : 'select',
+		    	operators : ['equal', 'not_equal'],
+		    	values : bannerList
+		    },
+		    {
 		    	id 	: 'last_reno',
 		    	label: 'Last Renovation Date',
-		    	type: 'date',
+		    	plugin: 'datepicker',
+			    plugin_config: {
+			      format: 'mm/dd/yyyy',
+			      todayBtn: 'linked',
+			      todayHighlight: true,
+			      autoclose: true
+			    },
 		    	operators : ['greater', 'less', 'equal', 'greater_or_equal', 'less_or_equal']
 		    },
 		    {
 		    	id : 'last_computer_update',
 		    	label : 'Last Computer Update Date',
-		    	type: 'date',
-		    	// input: 'date',
+		    	plugin: 'datepicker',
+			    plugin_config: {
+			      format: 'mm/dd/yyyy',
+			      todayBtn: 'linked',
+			      todayHighlight: true,
+			      autoclose: true
+			    },
 		    	operators : ['greater', 'less', 'equal']
 
 		    },
@@ -208,27 +255,42 @@
 		// get rules & SQL
 		$('.parse-sql').on('click', function () {
 
-		    // JSON
-
-		    var resJson = $('#builder').queryBuilder('getRules');
-
-		    $(".json-parsed").html(JSON.stringify(resJson, null, 2));
-
-		    // SQL
 
 		    var resSql = $('#builder').queryBuilder('getSQL', false);
-
-		    $(".sql-parsed").html(resSql.sql);
+		    
+		    $.ajax({
+		      type: 'GET',
+		      url: "/report/build",
+		      data: resSql, 
+		      dataType: 'json'
+		    })
+		    .done(function(result){
+		    	console.log(result)
+		    	fillResult(result)
+		    });
 
 		});
 
-		// result
+		
 
-		$(document).ready(function(){
-		    
-		    $( ".parse-sql" ).trigger( "click" );
-		    
-		});
+		var fillResult = function(result){
+			
+			$(".report-data").remove()
+			_.each(result, function(index){
+
+
+				$('#report-result').append("<tr class='report-data'><td>" + index.id + "</td>"
+											+"<td>" + index.name + "</td>"
+											+"<td>" + index.address1 + "</td>"
+											+"<td>" + index.city + "</td>"
+											+"<td>" + index.province + "</td>"
+											+"<td> <a href='/store/"+index.id+"'>View Details</a> </td></tr>" )
+
+				
+			})
+			$('#report-result').removeClass("hidden").addClass("visible");	
+			
+		}
 
 
 	</script>

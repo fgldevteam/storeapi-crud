@@ -28,4 +28,5 @@ Route::get('/home','StoreController@index');
 
 Route::resource('store', 'StoreController');
 
-Route::get('/report', 'ReportController@index');
+Route::get('/report', 'ReportController@showReports');
+Route::get('/report/build', 'ReportController@buildReports');

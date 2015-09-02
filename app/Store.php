@@ -127,12 +127,32 @@ class Store extends Model
 
     public static function getDistrictList()
     {
-        $districtList = \DB::table('districts')
-                            ->join('stores', 'districts.id' , '=', 'stores.district_id')
-                            ->select('districts.name')
-                            ->distinct()
-                            ->get();
+        $districtList = \DB::table('districts')->lists('name', 'id');
         return json_encode($districtList);    
+    }
+
+    public static function getBannerList()
+    {
+        $bannerList = \DB::table('banners')->lists('name', 'id');
+        return json_encode($bannerList);
+    }
+
+    public static function getReportData($query){
+        
+        // $queryParams = preg_split('/ /', $query);
+        // $queryParams[2] = preg_replace('/\'/', '', $queryParams[2]);
+        
+        // if ($queryParams[0] == 'district') {
+        //     $district = \DB::table('districts')->where('name', $queryParams[2])->first();
+        //     $queryParams[0] = 'district_id';
+        //     $queryParams[2] = $district->id;
+        // }
+        
+        // $result = \DB::table('stores')->where($queryParams[0], $queryParams[1], $queryParams[2])->get();
+        // \Log::info($result);
+        $result= \DB::table('stores')->whereRaw($query)->get();
+        \Log::info($result);
+        return $result;
     }
 
 }

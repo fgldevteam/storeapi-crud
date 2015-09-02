@@ -2,7 +2,9 @@
 
 @section('content')
 	<link rel="stylesheet" type="text/css" href="/css/datepicker.css">
+	
 	<div class="form-container col-md-10">
+
 		<h2>Add Store</h2>
 		{!! Form::open(['route' => 'store.store']) !!}
 			<div class="row">
@@ -123,7 +125,7 @@
 					{!! Form::text('last_reno', null, ['class' => 'form-control' , 'id'=>'last_reno']) !!}
 
 				</div>
-				<div class="col-md-3">
+				<div class="col-md-3 form-group date">
 					{!! Form::label('last_computer_update', 'Last Computer Update:') !!}
 					{!! Form::text('last_computer_update', null, ['class' => 'form-control', 'id'=>'last_computer_update']) !!}
 
