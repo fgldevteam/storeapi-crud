@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Store;
+use App\Models\Store;
 
 class StoreController extends Controller
 {
@@ -73,7 +73,15 @@ class StoreController extends Controller
     public function show($id)
     {
         $storeDetails = Store::getStoreDetails($id)->toArray();
-        return view('store.view')->with('store', $storeDetails);
+        $bannersList = \DB::table('banners')->lists('name', 'id');
+        $districtsList = \DB::table('districts')->lists('name', 'id');
+        $classificationsList = \DB::table('classifications')->lists('name', 'id');
+        $statusList = \DB::table('status')->lists('name', 'id');
+        return view('store.view')->with('store', $storeDetails)
+                                ->with('districts', $districtsList)
+                                ->with('classifications', $classificationsList)
+                                ->with('banners', $bannersList)
+                                ->with('status', $statusList);
     }
 
     /**

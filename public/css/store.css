@@ -11,3 +11,42 @@ td{
 .selectize-input{
 	min-width: 200px !important;
 }
+
+#banner{
+	/*border: thin solid red;*/
+}
+#title{
+	/*border: thin solid lime;*/
+}
+	#storename {
+		font-size: 16px;
+		text-align: center;
+	}
+	#district{
+		font-size: 12px;
+		text-align: center;
+	}
+#store-class{
+	/*border: thin solid blue;*/
+	text-transform: uppercase;
+}
+
+#address{
+	text-align: center;
+	font-size: 14px;
+	
+	/*border: thin solid black;*/
+}
+	#address .row{
+		padding-left: 20px;
+	}
+#map {
+	/*border: thin solid black;*/
+}
+ #store-details{
+ 	/*border: thin solid aqua;*/
+ }
+
+	.detail-heading{
+		font-weight: bolder;
+	}
