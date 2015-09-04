@@ -35,6 +35,12 @@
 		        
         	</div>
         	<div class="col-md-10 col-md-offset-1">
+        		<div class="col-md-2 col-md-offset-10">
+        			<form method="get" action="" class="hidden" id="download-report">
+        				<button class="form-control" >Download Report</button>
+        			</form>
+        		</div>
+        		
         		<table class="table hidden" id="report-result">
 		            <tr>
 		            	<th>Store Number</th>

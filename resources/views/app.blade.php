@@ -250,33 +250,75 @@
 
 		    $(".sql-parsed").empty();
 
+		    $(".filename-widget").remove();
+
+		    $(".report-data").remove()
+
+
 		});
 
 		// get rules & SQL
 		$('.parse-sql').on('click', function () {
 
+			// $(".filename-widget").remove();
 
-		    var resSql = $('#builder').queryBuilder('getSQL', false);
+		   	// $(".parse-sql").confirm("Do you want to save the report?");
+		   	
+		   	if (confirm ('Do you want to save the report?')) {
+		   		console.log("hell ya")
+		   		var parent = $(".content-container");
+		   		$(parent).append('<div class="row filename-widget">'+
+		    				'<div class="col-md-2 col-md-offset-1">'+
+		    				'<label for="filename"> What do you want to name the file? </label>'+
+		    				'<input type="text" name="filename id="filename" class="form-control" />'+
+		    				'<button name="submit" class="get-report form-control"> OK </button>'+
+		    				'</div></div>')
+		   	}
+
+		   	else{
+		   		var resSql = $('#builder').queryBuilder('getSQL', false);
+		   		sendAjaxReq(resSql);
+		   	}
+
 		    
-		    $.ajax({
-		      type: 'GET',
-		      url: "/report/build",
-		      data: resSql, 
-		      dataType: 'json'
-		    })
-		    .done(function(result){
-		    	console.log(result)
-		    	fillResult(result)
-		    });
+		    
 
 		});
 
-		
-
-		var fillResult = function(result){
+		$('body').on('click', "button.get-report" ,function(){
 			
-			$(".report-data").remove()
-			_.each(result, function(index){
+			var resSql = $('#builder').queryBuilder('getSQL', false);
+			var filename = $(".filename-widget :input").val();
+			sendAjaxReq(resSql, filename);
+			
+		})
+
+		sendAjaxReq = function(resSql, filename){
+			$.ajax({
+		      type: 'GET',
+		      url: "/report/build",
+		      data: { 'sql' : resSql , 'filename' : filename } ,
+		      dataType: 'json'
+		    })
+		    .done(function(response){    	
+		    	console.log(response)
+		    	fillResponse(response)
+		    });
+		}
+
+		var fillResponse = function(response){
+			
+			$(".filename-widget").remove();
+			$(".report-data").remove();
+			console.log(response.filepath)
+			if (!(response.filepath === 'undefined')) {
+				$("#download-report").removeClass("hidden").attr("action", response.filepath);
+			}
+			else{
+				$("#download-report").remove()
+			}
+			var queryResult = response.result;
+			_.each( queryResult, function(index){
 
 
 				$('#report-result').append("<tr class='report-data'><td>" + index.id + "</td>"
